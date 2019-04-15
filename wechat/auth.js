@@ -1,7 +1,11 @@
 // 类似中间件，封装
 const config = require('../config')
 const sha1 = require('sha1')
-const { getUserDataAsync , parseXMLAsync ,formatMessage} = require('../utils/tool.js')
+const { getUserDataAsync , parseXMLAsync ,formatMessage} = require('../utils/tool.js');
+
+
+const reply = require('./reply')
+const template = require('./template')
 module.exports = () => {
     return async (req, res, next) => {
         // console.log(req.query)
@@ -41,9 +45,9 @@ module.exports = () => {
             }
             const xmlData = await getUserDataAsync(req);
             // buffer数据
-            console.log(xmlData)
+            // console.log(xmlData,"________________________________")
 
-
+            
                 // < xml > 
                 //     <ToUserName><![CDATA[gh_d772f38c5ba2]]></ToUserName> //开发者id
                 //     <FromUserName><![CDATA[o1Q3x03Pn0eLpM8wlwFHn7w3nObg]]></FromUserName> //用户openid
@@ -54,35 +58,25 @@ module.exports = () => {
                 // </xml >
                 // xml对象转为js对象
             const jsData = await parseXMLAsync (xmlData)
-                console.log(jsData)
+                // console.log(jsData)
 
             /**
              * 格式化
              */
             var message = formatMessage(jsData)
 
-            // 用户信息是否是文本信息
-            let content = '您在说什么，我听不清';
-            if(message.MsgType == 'text'){
-                console.log("Sssss")
-                if(message.Content === '0'){
-                    content = '对不起，我是个警察';
-                }else if (message.Content === '1'){
-                    content = '以前没得选';
-                }else if (message.Content === '2'){
-                    content = '现在我想做个好人';
-                }
-            }
+            const options = reply(message)
+            console.log(options,options.Content,"________________")
+            const replyMessage = template(options);
+        //     let replyMessage =`<xml>
+        //     <ToUserName><![CDATA[${options.ToUserName}]]></ToUserName>
+        //     <FromUserName><![CDATA[${options.FromUserName}]]></FromUserName>
+        //     <CreateTime>${Date.now()}</CreateTime>
+        //     <MsgType><![CDATA[text]]></MsgType>
+        //     <Content><![CDATA[${options.Content}]]></Content>
+        //   </xml>`
 
-            let replyMessage =`<xml>
-            <ToUserName><![CDATA[${message.FromUserName}]]></ToUserName>
-            <FromUserName><![CDATA[${message.ToUserName}]]></FromUserName>
-            <CreateTime>${Date.now()}</CreateTime>
-            <MsgType><![CDATA[text]]></MsgType>
-            <Content><![CDATA[${content}]]></Content>
-          </xml>`
-            //返回给服务器
-            console.log(replyMessage)
+            console.log(replyMessage,"SS")
             res.send(replyMessage);
             // res.end('')
         } else {
