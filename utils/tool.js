@@ -1,4 +1,9 @@
 const { parseString } = require('xml2js')
+const {
+    readFile,
+    writeFile
+} = require('fs')
+const {resolve} = require('path')
 module.exports = {
     // 流式信息拼接
     getUserDataAsync(req) {
@@ -40,5 +45,35 @@ module.exports = {
             }            
         }
         return message;
+    },
+    writeFileAsync (data,filename){
+        data = JSON.stringify(data)
+        const fliePath = resolve(__dirname,filename);
+        return new Promise((resolve, reject) => {
+            writeFile(fliePath, data, err => {
+                if (!err) {
+                    console.log("file write success");
+                    resolve();
+                } else {
+                    console.log(err);
+                    reject('writeFileAsync 方法出错');
+                }
+            })
+        })
+    },
+    readFileAsync (filename){
+        const fliePath = resolve(__dirname,filename)
+        return new Promise((resolve, reject) => {
+            readFile(fliePath, data, err => {
+                if (!err) {
+                    console.log("file read success");
+                    data = JSON.parse(data)
+                    resolve(data);
+                } else {
+                    console.log(err);
+                    reject('readFileAsynce 方法出错');
+                }
+            })
+        })
     }
 }
