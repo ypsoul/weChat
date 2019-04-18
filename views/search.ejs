@@ -1,12 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
-    <p>这是一个搜索的页面</p>
+    <p id="search">语言识别</p>
+    <script src='http://res.wx.qq.com/open/js/jweixin-1.4.0.js'></script>
+    <script src="https://cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
+    <script>
+        //1.绑定
+        //2.引入js 
+        wx.config({
+            //实事求是
+            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wxfa013a1560cf5a8b', // 必填，公众号的唯一标识
+            timestamp: '<%= timestamp%>', // 必填，生成签名的时间戳
+            nonceStr: '<%= noncestr%>', // 必填，生成签名的随机串
+            signature: '<%= signature%>',// 必填，签名
+            jsApiList: ['onMenuShareQZone', 'startRecord', 'stopRecord', 'translateVoice'] // 必填，需要使用的JS接口列表
+        });
+        wx.ready(function () {
+            // config信息验证后会执行ready方法，
+            //所有接口调用都必须在config接口获得结果之后，
+            //config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
+            //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+            // 检测是否有权限
+            wx.checkJsApi({
+                jsApiList: ['startRecord', 'stopRecord','translateVoice'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                success: function (res) {
+                    console.log(res,"sss")
+                    // 以键值对的形式返回，可用的api值true，不可用为false
+                    // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+                }
+            });
+            var isRecord = false;
+            $("#search").tap(function () {
+                if (!isRecord) {
+                    //开始录音
+                    wx.startRecord();
+                    isRecord = true;
+                } else {
+                    //结束录音  
+                    // 上传到微信服务器,微信服务器给一个ID给开发者使用
+                    wx.stopRecord({
+                        success: function (res) {
+                            var localId = res.localId;
+                            // 转化文字
+                            wx.translateVoice({
+                                localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                                isShowProgressTips: 1, // 默认为1，显示进度提示
+                                success: function (res) {
+                                    alert(res.translateResult); // 语音识别的结果
+                                }
+                            });
+                            isRecord = false
+                        }
+                    })
+                }
+
+
+
+            })
+        })
+        wx.error(function () {
+            // config信息验证失败会执行error函数
+        })
+    </script>
 </body>
+
 </html>

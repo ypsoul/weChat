@@ -59,7 +59,7 @@ class Wechat {
         if (!data && data.access_token && !data.expires_in) {
             return false;
         }
-        return data.expires_in > data.now()
+        return data.expires_in > Date.now()
     }
     // 获取没有过期的access_token
     /**
@@ -223,4 +223,5 @@ class Wechat {
 //     const data = w.fetchTicket()
 //     console.log(data)
 // })()
-moudel.exports = Wechat ;
+
+module.exports = Wechat ;
