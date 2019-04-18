@@ -213,13 +213,14 @@ class Wechat {
             })
     }
 }
-(async () => {
-    const w = new Wechat();
-    // 先删除之前菜单再创建
-    // let result = await w.deleteMenu()
-    // console.log(result)
-    // result = await w.createMenu(menu)
-    // console.log(result)
-    const data = w.fetchTicket()
-    console.log(data)
-})()
+// (async () => {
+//     const w = new Wechat();
+//     // 先删除之前菜单再创建
+//     // let result = await w.deleteMenu()
+//     // console.log(result)
+//     // result = await w.createMenu(menu)
+//     // console.log(result)
+//     const data = w.fetchTicket()
+//     console.log(data)
+// })()
+moudel.exports = Wechat ;
